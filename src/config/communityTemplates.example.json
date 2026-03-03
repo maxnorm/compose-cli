@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "signature": "",
+  "templates": [
+    {
+      "id": "community-sample",
+      "name": "Community Sample",
+      "source": "https://example.com/template.tar.gz",
+      "checksumSha256": ""
+    }
+  ]
+}

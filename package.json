@@ -1,0 +1,52 @@
+{
+  "name": "@perfect-abstractions/compose-cli",
+  "version": "0.1.0",
+  "description": "CLI to scaffold Compose facet-based diamond projects",
+  "main": "index.js",
+  "bin": {
+    "compose": "./index.js"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test",
+    "test:unit": "node --test test/unit",
+    "test:integration": "node --test test/integration",
+    "check": "npm run lint && npm run test",
+    "pack:check": "npm pack --dry-run",
+    "prepublishOnly": "npm run check && npm run pack:check"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart-contracts",
+    "diamonds",
+    "ERC-2535", 
+    "ERC-8153",
+    "facets",
+    "compose",
+    "cli"
+  ],
+  "author": "Perfect Abstractions",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "index.js",
+    "src/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "fs-extra": "^11.3.3",
+    "inquirer": "^13.3.0",
+    "minimist": "^1.2.8",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2"
+  }
+}

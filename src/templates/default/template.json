@@ -1,0 +1,10 @@
+{
+  "id": "default",
+  "name": "Default",
+  "description": "Minimal Compose facet-based diamond starter for Foundry and Hardhat.",
+  "variants": ["default-foundry", "default-hardhat-js", "default-hardhat-ts"],
+  "compatibility": {
+    "frameworks": ["foundry", "hardhat"],
+    "facetSources": ["local", "registry"]
+  }
+}

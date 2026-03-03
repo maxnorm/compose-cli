@@ -1,0 +1,32 @@
+{
+  "templates": [
+    {
+      "id": "default",
+      "name": "Default",
+      "description": "Minimal Compose facet-based diamond project",
+      "variants": [
+        {
+          "id": "default-foundry",
+          "framework": "foundry",
+          "path": "templates/default/foundry",
+          "facets": "local"
+        },
+        {
+          "id": "default-hardhat-js",
+          "framework": "hardhat",
+          "language": "javascript",
+          "path": "templates/default/hardhat/js",
+          "facets": "local"
+        },
+        {
+          "id": "default-hardhat-ts",
+          "framework": "hardhat",
+          "language": "typescript",
+          "path": "templates/default/hardhat/ts",
+          "facets": "local"
+        }
+      ]
+    }
+  ],
+  "defaultTemplateId": "default"
+}

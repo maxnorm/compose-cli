@@ -1,0 +1,7 @@
+{
+  "default": [
+    "default-foundry",
+    "default-hardhat-js",
+    "default-hardhat-ts"
+  ]
+}
