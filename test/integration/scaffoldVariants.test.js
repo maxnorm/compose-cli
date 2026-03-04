@@ -18,7 +18,6 @@ async function scaffoldWithVariant(variant, options = {}) {
       options: {
         framework: variant.framework,
         language: variant.language,
-        facetSource: options.facetSource || "registry",
         installDeps: false,
       },
     });
@@ -39,7 +38,6 @@ test("scaffolds foundry variant", async () => {
 
   assert.equal(await fs.pathExists(path.join(outputPath, "foundry.toml")), true);
   assert.equal(await fs.pathExists(path.join(outputPath, "src", "CounterFacet.sol")), true);
-  assert.equal(await fs.pathExists(path.join(outputPath, "compose.facets.json")), true);
 });
 
 test("scaffolds hardhat js variant", async () => {

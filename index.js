@@ -8,26 +8,7 @@ const { runInitCommand } = require("./src/commands/init");
 const { runVersionCommand } = require("./src/commands/version");
 const { runUpdateCommand } = require("./src/commands/update");
 const { runListTemplatesCommand } = require("./src/commands/listTemplates");
-const HELP_TEXT = ```
-Compose CLI
-
-Usage:
-  compose init [options]
-  compose list-templates
-  compose --version | -v
-  compose update
-
-Options:
-  --name <project-name>
-  --template <template-id>
-  --framework <foundry|hardhat>
-  --language <javascript|typescript>
-  --facet-source <local|registry>
-  --install-deps
-  --skip-install
-  --yes
-  --help
-```;
+const { HELP_TEXT } = require("./src/utils/helpText");
 
 async function main() {
   const argv = minimist(process.argv.slice(2), {
@@ -36,8 +17,8 @@ async function main() {
       h: "help",
       n: "name",
     },
-    boolean: ["version", "help", "install-deps", "skip-install", "yes"],
-    string: ["name", "template", "framework", "language", "facet-source"],
+    boolean: ["version", "help", "yes"],
+    string: ["name", "template", "framework", "language"],
   });
 
   const [command = ""] = argv._;
@@ -48,7 +29,7 @@ async function main() {
   }
 
   if (argv.help || !command) {
-    logger.info(HELP_TEXT.trim());
+    logger.plain(HELP_TEXT.trim());
     return;
   }
 
@@ -67,7 +48,7 @@ async function main() {
     return;
   }
 
-  throw new Error(`Unknown command: ${command}`);
+  throw new Error(`Unknown command: ${command}. Run 'compose --help' for available commands.`);
 }
 
 main().catch((error) => {

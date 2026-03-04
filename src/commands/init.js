@@ -2,18 +2,15 @@ const fs = require("fs-extra");
 const path = require("node:path");
 const { askInitPrompts } = require("../prompts/initPrompts");
 const { logger } = require("../utils/logger");
-const { loadTemplateConfig, pickVariant, resolveTemplatePath } = require("../scaffold/templateLoader");
+const { loadTemplateConfig, pickVariant, resolveTemplatePath } = require("../scaffold/utils/templateLoader");
 const { scaffoldProject } = require("../scaffold/scaffoldProject");
-const { DEFAULT_FACET_SOURCE, DEFAULT_FRAMEWORK, DEFAULT_TEMPLATE_ID } = require("../config/constants");
 
 function normalizeInitOptions(argv) {
   const options = {
     projectName: argv.name || "",
-    template: argv.template || DEFAULT_TEMPLATE_ID,
-    framework: argv.framework || DEFAULT_FRAMEWORK,
+    template: argv.template || "",
+    framework: argv.framework || "",
     language: argv.language,
-    facetSource: argv["facet-source"] || DEFAULT_FACET_SOURCE,
-    installDeps: argv["skip-install"] ? false : Boolean(argv["install-deps"]),
     yes: Boolean(argv.yes),
   };
 
@@ -42,15 +39,16 @@ async function preflightChecks(options) {
   if (options.framework === "foundry") {
     const forgeExists = await ensureBinaryExists("forge");
     if (!forgeExists) {
-      logger.warn("forge not found in PATH. Foundry dependency install may fail.");
+      throw new Error(
+        "forge not found in PATH. Please install Foundry and try again.",
+      );
     }
   }
 
-  if (options.framework === "hardhat" && options.installDeps) {
+  if (options.framework === "hardhat") {
     const npmExists = await ensureBinaryExists("npm");
     if (!npmExists) {
-      logger.warn("npm not found in PATH. Hardhat dependency installation will be skipped.");
-      options.installDeps = false;
+      throw new Error("npm not found in PATH. Please install Node.js (with npm) and try again.");
     }
   }
 }
@@ -60,7 +58,7 @@ async function collectInitOptions(argv) {
 
   if (normalized.yes) {
     if (!normalized.projectName) {
-      normalized.projectName = "my-compose-diamond";
+      normalized.projectName = "my-diamond";
     }
     return normalized;
   }
@@ -70,18 +68,14 @@ async function collectInitOptions(argv) {
     template: normalized.template || undefined,
     framework: normalized.framework || undefined,
     language: normalized.language,
-    facetSource: normalized.facetSource || undefined,
-    installDeps: argv["install-deps"] || argv["skip-install"] ? normalized.installDeps : undefined,
   });
 
   return {
     ...normalized,
-    projectName: answers.name || normalized.projectName || "my-compose-diamond",
+    projectName: answers.name || normalized.projectName || "my-diamond",
     template: answers.template || normalized.template,
     framework: answers.framework || normalized.framework,
     language: answers.language || normalized.language,
-    facetSource: answers.facetSource || normalized.facetSource,
-    installDeps: typeof answers.installDeps === "boolean" ? answers.installDeps : normalized.installDeps,
   };
 }
 
@@ -104,8 +98,7 @@ async function runInitCommand(argv) {
     options: {
       framework: selectedVariant.framework,
       language: selectedVariant.language,
-      facetSource: initOptions.facetSource || selectedVariant.facets,
-      installDeps: Boolean(initOptions.installDeps),
+      installDeps: true,
     },
   });
 
@@ -113,8 +106,8 @@ async function runInitCommand(argv) {
   logger.info(`Next: cd ${initOptions.projectName}`);
   if (selectedVariant.framework === "foundry") {
     logger.info("Then run: forge build && forge test");
-  } else {
-    logger.info("Then run: npm install && npx hardhat compile");
+  } else if (selectedVariant.framework === "hardhat") {
+    logger.info("Then run: npx hardhat compile && npx hardhat test");
   }
 }
 

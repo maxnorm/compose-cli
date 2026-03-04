@@ -1,4 +1,4 @@
-const { loadTemplateConfig } = require("../scaffold/templateLoader");
+const { loadTemplateConfig } = require("../scaffold/utils/templateLoader");
 const { logger } = require("../utils/logger");
 
 async function runListTemplatesCommand() {

@@ -5,10 +5,8 @@ const { normalizeInitOptions } = require("../../src/commands/init");
 test("normalizeInitOptions sets defaults", () => {
   const options = normalizeInitOptions({});
 
-  assert.equal(options.template, "default");
-  assert.equal(options.framework, "foundry");
-  assert.equal(options.facetSource, "local");
-  assert.equal(options.installDeps, false);
+  assert.equal(options.template, "");
+  assert.equal(options.framework, "");
 });
 
 test("normalizeInitOptions prioritizes explicit flags", () => {
@@ -17,13 +15,10 @@ test("normalizeInitOptions prioritizes explicit flags", () => {
     template: "default",
     framework: "hardhat",
     language: "javascript",
-    "facet-source": "registry",
     "install-deps": true,
   });
 
   assert.equal(options.projectName, "demo");
   assert.equal(options.framework, "hardhat");
   assert.equal(options.language, "javascript");
-  assert.equal(options.facetSource, "registry");
-  assert.equal(options.installDeps, true);
 });

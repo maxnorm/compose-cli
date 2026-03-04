@@ -25,12 +25,6 @@ function validateTemplatesConfig(config) {
       ensureString(variant.id, `templates[${index}].variants[${variantIndex}].id`);
       ensureString(variant.framework, `templates[${index}].variants[${variantIndex}].framework`);
       ensureString(variant.path, `templates[${index}].variants[${variantIndex}].path`);
-
-      if (!["local", "registry"].includes(variant.facets)) {
-        throw new Error(
-          `Invalid templates config: templates[${index}].variants[${variantIndex}].facets must be local|registry`
-        );
-      }
     });
   });
 

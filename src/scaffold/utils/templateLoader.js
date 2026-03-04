@@ -1,7 +1,7 @@
 const path = require("node:path");
 const fs = require("fs-extra");
-const { TEMPLATE_REGISTRY_PATH } = require("../config/constants");
-const { validateTemplatesConfig } = require("../config/validateTemplatesConfig");
+const { TEMPLATE_REGISTRY_PATH } = require("../../config/constants");
+const { validateTemplatesConfig } = require("../../config/validateTemplatesConfig");
 
 async function loadTemplateConfig() {
   const config = await fs.readJson(TEMPLATE_REGISTRY_PATH);
@@ -38,7 +38,7 @@ function pickVariant(config, options) {
 }
 
 function resolveTemplatePath(variant) {
-  return path.join(__dirname, "..", variant.path);
+  return path.join(__dirname, "..", "..", variant.path);
 }
 
 module.exports = {

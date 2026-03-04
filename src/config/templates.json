@@ -8,22 +8,19 @@
         {
           "id": "default-foundry",
           "framework": "foundry",
-          "path": "templates/default/foundry",
-          "facets": "local"
+          "path": "templates/default/foundry"
         },
         {
           "id": "default-hardhat-js",
           "framework": "hardhat",
           "language": "javascript",
-          "path": "templates/default/hardhat/js",
-          "facets": "local"
+          "path": "templates/default/hardhat/js"
         },
         {
           "id": "default-hardhat-ts",
           "framework": "hardhat",
           "language": "typescript",
-          "path": "templates/default/hardhat/ts",
-          "facets": "local"
+          "path": "templates/default/hardhat/ts"
         }
       ]
     }

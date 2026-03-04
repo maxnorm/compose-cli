@@ -27,7 +27,7 @@
     "compose",
     "cli"
   ],
-  "author": "Perfect Abstractions",
+  "author": "Perfect-Abstractions/Compose",
   "license": "MIT",
   "engines": {
     "node": ">=18"

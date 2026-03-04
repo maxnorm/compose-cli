@@ -1,11 +1,8 @@
 const fs = require("fs-extra");
-const {
-  assertTargetDoesNotExist,
-  copyTemplate,
-  resolveProjectDir,
-} = require("./fileManager");
-const { replaceTokensRecursively } = require("./tokenReplace");
-const { applyFacetSource } = require("./facetSource");
+const { assertTargetDoesNotExist, resolveProjectDir } = require("./utils/fileManager");
+const { replaceTokensRecursively } = require("./utils/tokenReplace");
+const { scaffoldFoundryProject } = require("./scaffoldFoundry");
+const { scaffoldHardhatProject } = require("./scaffoldHardhat");
 
 async function scaffoldProject({ projectName, templatePath, options }) {
   const projectDir = resolveProjectDir(projectName);
@@ -16,13 +13,18 @@ async function scaffoldProject({ projectName, templatePath, options }) {
     throw new Error(`Template path does not exist: ${templatePath}`);
   }
 
-  await copyTemplate(templatePath, projectDir);
+  if (options.framework === "foundry") {
+    await scaffoldFoundryProject(projectName, templatePath, projectDir, options);
+  } else if (options.framework === "hardhat") {
+    await scaffoldHardhatProject(projectName, templatePath, projectDir, options);
+  } else {
+    throw new Error(`Unknown framework: ${options.framework}`);
+  }
 
   await replaceTokensRecursively(projectDir, {
     "{{projectName}}": projectName,
   });
 
-  await applyFacetSource(projectDir, options);
   return projectDir;
 }
 
