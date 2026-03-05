@@ -14,7 +14,7 @@ contract CounterFacetTest is Test {
     function setUp() public {
         CounterFacet counterFacet = new CounterFacet();
 
-        address[] memory facets = new address[](3);
+        address[] memory facets = new address[](1);
         facets[0] = address(counterFacet);
 
         diamond = new Diamond(facets, owner);

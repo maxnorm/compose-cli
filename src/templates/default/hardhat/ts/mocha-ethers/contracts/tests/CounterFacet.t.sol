@@ -2,8 +2,8 @@
 pragma solidity ^0.8.30;
 
 import {Test} from "forge-std/Test.sol";
-import {CounterFacet} from "../../contracts/facets/CounterFacet.sol";
-import {Diamond} from "../../contracts/Diamond.sol";
+import {CounterFacet} from "../facets/CounterFacet.sol";
+import {Diamond} from "../Diamond.sol";
 
 contract CounterFacetTest is Test {
     CounterFacet internal counter;
@@ -14,7 +14,7 @@ contract CounterFacetTest is Test {
     function setUp() public {
         CounterFacet counterFacet = new CounterFacet();
 
-        address[] memory facets = new address[](3);
+        address[] memory facets = new address[](1);
         facets[0] = address(counterFacet);
 
         diamond = new Diamond(facets, owner);

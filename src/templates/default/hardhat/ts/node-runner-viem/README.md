@@ -1,6 +1,6 @@
 # {{projectName}}
 
-This project showcases a Hardhat 3 Beta project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions.
+This project showcases a Hardhat 3 project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions, scaffolded as a Compose diamond starter.
 
 To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
 
@@ -12,6 +12,8 @@ This example project includes:
 - Foundry-compatible Solidity unit tests.
 - TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
 - Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+- A local `Diamond` contract using Compose `DiamondMod` and `OwnerMod`.
+- Counter and diamond management facets (`CounterFacet`, `DiamondInspectFacet`, `DiamondUpgradeFacet`).
 
 ## Usage
 
@@ -32,7 +34,7 @@ npx hardhat test nodejs
 
 ### Make a deployment to Sepolia
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+This project includes an example Ignition module to deploy the diamond and facets. You can deploy this module to a locally simulated chain or to Sepolia.
 
 To run the deployment to a local chain:
 
