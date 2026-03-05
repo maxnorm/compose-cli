@@ -1,7 +1,8 @@
 {
   "default": [
     "default-foundry",
-    "default-hardhat-js",
-    "default-hardhat-ts"
+    "default-hardhat-minimal",
+    "default-hardhat-mocha-ethers",
+    "default-hardhat-node-runner-viem"
   ]
 }

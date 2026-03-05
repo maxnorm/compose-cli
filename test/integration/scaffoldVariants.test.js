@@ -3,8 +3,12 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 const os = require("node:os");
 const fs = require("fs-extra");
-const { loadTemplateConfig, pickVariant, resolveTemplatePath } = require("../../src/scaffold/templateLoader");
-const { scaffoldProject } = require("../../src/scaffold/scaffoldProject");
+const {
+  loadTemplateConfig,
+  pickVariant,
+  resolveTemplatePath,
+} = require("../../src/scaffold/utils/templateLoader");
+const { scaffold } = require("../../src/scaffold/scaffold");
 
 async function scaffoldWithVariant(variant, options = {}) {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "compose-cli-it-"));
@@ -12,58 +16,99 @@ async function scaffoldWithVariant(variant, options = {}) {
   process.chdir(tempRoot);
   try {
     const projectName = options.projectName || "demo-project";
-    const outputPath = await scaffoldProject({
+    const result = await scaffold({
       projectName,
       templatePath: resolveTemplatePath(variant),
       options: {
         framework: variant.framework,
         language: variant.language,
+        hardhatProjectType: variant.projectType,
         installDeps: false,
       },
     });
-    return { tempRoot, outputPath };
+    return { tempRoot, projectDir: result.projectDir, nextSteps: result.nextSteps };
   } finally {
     process.chdir(originalCwd);
   }
 }
 
-test("scaffolds foundry variant", async () => {
-  const config = await loadTemplateConfig();
-  const variant = pickVariant(config, {
-    template: "default",
-    framework: "foundry",
-  });
-
-  const { outputPath } = await scaffoldWithVariant(variant, { projectName: "foundry-app" });
-
-  assert.equal(await fs.pathExists(path.join(outputPath, "foundry.toml")), true);
-  assert.equal(await fs.pathExists(path.join(outputPath, "src", "CounterFacet.sol")), true);
-});
-
-test("scaffolds hardhat js variant", async () => {
-  const config = await loadTemplateConfig();
-  const variant = pickVariant(config, {
-    template: "default",
-    framework: "hardhat",
-    language: "javascript",
-  });
-
-  const { outputPath } = await scaffoldWithVariant(variant, { projectName: "hardhat-js-app" });
-
-  assert.equal(await fs.pathExists(path.join(outputPath, "hardhat.config.js")), true);
-  assert.equal(await fs.pathExists(path.join(outputPath, "contracts", "CounterFacet.sol")), true);
-});
-
-test("scaffolds hardhat ts variant", async () => {
+test("scaffolds hardhat minimal variant", async () => {
   const config = await loadTemplateConfig();
   const variant = pickVariant(config, {
     template: "default",
     framework: "hardhat",
     language: "typescript",
+    projectType: "minimal",
   });
 
-  const { outputPath } = await scaffoldWithVariant(variant, { projectName: "hardhat-ts-app" });
+  const { projectDir, nextSteps } = await scaffoldWithVariant(variant, {
+    projectName: "hardhat-minimal-app",
+  });
+  const packageJson = await fs.readJson(path.join(projectDir, "package.json"));
 
-  assert.equal(await fs.pathExists(path.join(outputPath, "hardhat.config.ts")), true);
-  assert.equal(await fs.pathExists(path.join(outputPath, "tsconfig.json")), true);
+  assert.equal(await fs.pathExists(path.join(projectDir, "hardhat.config.ts")), true);
+  assert.equal(packageJson.name, "hardhat-minimal-app");
+  assert.equal(nextSteps.includes("npm install"), true);
+});
+
+test("scaffolds hardhat mocha-ethers variant", async () => {
+  const config = await loadTemplateConfig();
+  const variant = pickVariant(config, {
+    template: "default",
+    framework: "hardhat",
+    language: "typescript",
+    projectType: "mocha-ethers",
+  });
+
+  const { projectDir } = await scaffoldWithVariant(variant, { projectName: "hardhat-mocha-app" });
+  const readme = await fs.readFile(path.join(projectDir, "README.md"), "utf8");
+
+  assert.equal(await fs.pathExists(path.join(projectDir, "test", "Counter.ts")), true);
+  assert.equal(readme.includes("{{projectName}}"), false);
+  assert.equal(readme.includes("hardhat-mocha-app"), true);
+});
+
+test("scaffolds hardhat node-runner-viem variant", async () => {
+  const config = await loadTemplateConfig();
+  const variant = pickVariant(config, {
+    template: "default",
+    framework: "hardhat",
+    language: "typescript",
+    projectType: "node-runner-viem",
+  });
+
+  const { projectDir } = await scaffoldWithVariant(variant, {
+    projectName: "hardhat-viem-app",
+  });
+  const packageJson = await fs.readJson(path.join(projectDir, "package.json"));
+
+  assert.equal(await fs.pathExists(path.join(projectDir, "test", "Counter.ts")), true);
+  assert.equal(
+    packageJson.dependencies["@perfect-abstractions/compose"],
+    "latest"
+  );
+});
+
+test("scaffold throws for unknown framework", async () => {
+  await assert.rejects(
+    () =>
+      scaffold({
+        projectName: "demo",
+        templatePath: resolveTemplatePath({ path: "templates/default/foundry" }),
+        options: { framework: "unknown", installDeps: false },
+      }),
+    /Unknown framework/
+  );
+});
+
+test("scaffold throws when template path is missing", async () => {
+  await assert.rejects(
+    () =>
+      scaffold({
+        projectName: "demo",
+        templatePath: path.join(process.cwd(), "this-template-does-not-exist"),
+        options: { framework: "hardhat", language: "typescript", installDeps: false },
+      }),
+    /Template path does not exist/
+  );
 });

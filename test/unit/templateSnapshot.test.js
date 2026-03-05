@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("fs-extra");
 const path = require("node:path");
-const { loadTemplateConfig } = require("../../src/scaffold/templateLoader");
+const { loadTemplateConfig } = require("../../src/scaffold/utils/templateLoader");
 
 test("template variants match snapshot", async () => {
   const snapshotPath = path.join(__dirname, "..", "fixtures", "template-variants.snapshot.json");
