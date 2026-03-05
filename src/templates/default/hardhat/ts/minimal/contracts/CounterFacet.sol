@@ -7,8 +7,4 @@ contract CounterFacet {
     function increment() external {
         _counter += 1;
     }
-
-    function getCounter() external view returns (uint256) {
-        return _counter;
-    }
 }

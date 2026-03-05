@@ -37,6 +37,15 @@ function resolveProjectDir(projectName) {
   return path.join(process.cwd(), projectName);
 }
 
+function getTemplateDisplayName(templatePath) {
+  const templatesRoot = path.join(__dirname, "..", "..", "templates");
+  let templateName = path.relative(templatesRoot, templatePath).replace(/\\/g, "/");
+  if (templateName.startsWith("..")) {
+    templateName = path.basename(templatePath);
+  }
+  return templateName;
+}
+
 module.exports = {
   assertTargetDoesNotExist,
   copyTemplate,
@@ -44,4 +53,5 @@ module.exports = {
   writeJson,
   appendLineIfMissing,
   resolveProjectDir,
+  getTemplateDisplayName,
 };

@@ -2,8 +2,10 @@ const fs = require("fs-extra");
 const path = require("node:path");
 const { askInitPrompts } = require("../prompts/initPrompts");
 const { logger } = require("../utils/logger");
+const { COMPOSE_DOCS_URL, COMPOSE_REPO_URL } = require("../config/constants");
 const { loadTemplateConfig, pickVariant, resolveTemplatePath } = require("../scaffold/utils/templateLoader");
-const { scaffoldProject } = require("../scaffold/scaffoldProject");
+const { scaffold } = require("../scaffold/scaffold");
+const { COMPOSE_HEADER } = require("../utils/composeAsciiHeader");
 
 function normalizeInitOptions(argv) {
   const options = {
@@ -11,6 +13,8 @@ function normalizeInitOptions(argv) {
     template: argv.template || "",
     framework: argv.framework || "",
     language: argv.language,
+    hardhatProjectType: argv.hardhatProjectType,
+    installDeps: argv["install-deps"],
     yes: Boolean(argv.yes),
   };
 
@@ -45,7 +49,7 @@ async function preflightChecks(options) {
     }
   }
 
-  if (options.framework === "hardhat") {
+  if (options.framework === "hardhat" && options.installDeps !== false) {
     const npmExists = await ensureBinaryExists("npm");
     if (!npmExists) {
       throw new Error("npm not found in PATH. Please install Node.js (with npm) and try again.");
@@ -60,6 +64,9 @@ async function collectInitOptions(argv) {
     if (!normalized.projectName) {
       normalized.projectName = "my-diamond";
     }
+    if (typeof normalized.installDeps !== "boolean") {
+      normalized.installDeps = true;
+    }
     return normalized;
   }
 
@@ -67,19 +74,34 @@ async function collectInitOptions(argv) {
     name: normalized.projectName || undefined,
     template: normalized.template || undefined,
     framework: normalized.framework || undefined,
-    language: normalized.language,
+    hardhatProjectType: normalized.hardhatProjectType,
+    installDeps: normalized.installDeps,
   });
+
+  const framework = answers.framework || normalized.framework;
+  const language =
+    normalized.language || (framework === "hardhat" ? "typescript" : normalized.language);
 
   return {
     ...normalized,
     projectName: answers.name || normalized.projectName || "my-diamond",
     template: answers.template || normalized.template,
-    framework: answers.framework || normalized.framework,
-    language: answers.language || normalized.language,
+    framework,
+    language,
+    hardhatProjectType: answers.hardhatProjectType || normalized.hardhatProjectType,
+    installDeps: typeof answers.installDeps === "boolean" ? answers.installDeps : true,
   };
 }
 
+function printInitHeader() {
+  logger.info(COMPOSE_HEADER);
+  logger.info("Scaffold your diamond smart contracts project with Compose");
+  logger.info(`Explore our facet library: ${COMPOSE_DOCS_URL}`);
+  logger.info("");
+}
+
 async function runInitCommand(argv) {
+  printInitHeader();
   const initOptions = await collectInitOptions(argv);
   await preflightChecks(initOptions);
 
@@ -88,27 +110,34 @@ async function runInitCommand(argv) {
     template: initOptions.template,
     framework: initOptions.framework,
     language: initOptions.language,
+    projectType: initOptions.hardhatProjectType,
   });
 
   const templatePath = resolveTemplatePath(selectedVariant);
 
-  const projectDir = await scaffoldProject({
+  const { projectDir, nextSteps } = await scaffold({
     projectName: initOptions.projectName,
     templatePath,
     options: {
       framework: selectedVariant.framework,
       language: selectedVariant.language,
-      installDeps: true,
+      hardhatProjectType: initOptions.hardhatProjectType || selectedVariant.projectType,
+      installDeps: initOptions.installDeps,
     },
   });
 
-  logger.success(`Project scaffolded in ${projectDir}`);
-  logger.info(`Next: cd ${initOptions.projectName}`);
-  if (selectedVariant.framework === "foundry") {
-    logger.info("Then run: forge build && forge test");
-  } else if (selectedVariant.framework === "hardhat") {
-    logger.info("Then run: npx hardhat compile && npx hardhat test");
+  logger.success(`\nProject "${initOptions.projectName}" scaffolded in "${projectDir}"`);
+  logger.plain("Next steps:");
+  let stepCount = 1;
+  logger.plain(`${stepCount}. cd ${initOptions.projectName}`);
+  for (const step of nextSteps) {
+    stepCount++;
+    logger.plain(`${stepCount}. ${step}`);
   }
+
+  logger.plain("");
+  logger.info("You're all set. We hope you'll Compose something great!\n");
+  logger.warn(`If this helped you, please give us a star on GitHub:\n${COMPOSE_REPO_URL}\n`);
 }
 
 module.exports = {

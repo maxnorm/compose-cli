@@ -13,7 +13,6 @@ npm install -g @perfect-abstractions/compose-cli
 ```bash
 compose init
 compose list-templates
-compose doctor
 compose --version
 compose update
 ```

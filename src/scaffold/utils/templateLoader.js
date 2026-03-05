@@ -10,7 +10,7 @@ async function loadTemplateConfig() {
 }
 
 function pickVariant(config, options) {
-  const { template = config.defaultTemplateId, framework, language } = options;
+  const { template = config.defaultTemplateId, framework, language, projectType } = options;
 
   const templateEntry = config.templates.find((item) => item.id === template);
   if (!templateEntry) {
@@ -22,6 +22,9 @@ function pickVariant(config, options) {
       return false;
     }
     if (item.framework === "hardhat" && language && item.language !== language) {
+      return false;
+    }
+    if (projectType && item.projectType && item.projectType !== projectType) {
       return false;
     }
     if (!framework && item.id === config.defaultTemplateId) {

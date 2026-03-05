@@ -11,16 +11,25 @@
           "path": "templates/default/foundry"
         },
         {
-          "id": "default-hardhat-js",
-          "framework": "hardhat",
-          "language": "javascript",
-          "path": "templates/default/hardhat/js"
-        },
-        {
-          "id": "default-hardhat-ts",
+          "id": "default-hardhat-minimal",
           "framework": "hardhat",
           "language": "typescript",
-          "path": "templates/default/hardhat/ts"
+          "path": "templates/default/hardhat/ts/minimal",
+          "projectType": "minimal"
+        },
+        {
+          "id": "default-hardhat-mocha-ethers",
+          "framework": "hardhat",
+          "language": "typescript",
+          "path": "templates/default/hardhat/ts/mocha-ethers",
+          "projectType": "mocha-ethers"
+        },
+        {
+          "id": "default-hardhat-node-runner-viem",
+          "framework": "hardhat",
+          "language": "typescript",
+          "path": "templates/default/hardhat/ts/node-runner-viem",
+          "projectType": "node-runner-viem"
         }
       ]
     }
