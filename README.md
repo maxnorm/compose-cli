@@ -44,3 +44,11 @@ If package installation fails before publication, the scaffold is still generate
 npm install
 npm run check
 ```
+
+To build or test the foundry template (or any template that uses `lib/` submodules), init libs once:
+
+```bash
+npm run prepare:lib
+```
+
+Then from a template directory, e.g. `src/templates/default/foundry`, run `forge build` and `forge test`. New templates that need forge-std or Compose can add the same submodules under their own `lib/`; `prepare:lib` inits all submodules repo-wide.
