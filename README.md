@@ -1,4 +1,4 @@
-# Compose CLI
+![Compose CLI](./assets/header.png)
 
 `@perfect-abstractions/compose-cli` scaffolds Compose-based facet diamond projects.
 
