@@ -96,8 +96,7 @@ async function collectInitOptions(argv) {
 function printInitHeader() {
   logger.info(COMPOSE_HEADER);
   logger.info("Scaffold your diamond smart contracts project with Compose");
-  logger.info(`Explore our facet library: ${COMPOSE_DOCS_URL}`);
-  logger.info("");
+  logger.info(`Explore our library: ${COMPOSE_DOCS_URL}\n`);
 }
 
 async function runInitCommand(argv) {
