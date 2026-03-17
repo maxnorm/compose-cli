@@ -89,6 +89,39 @@ test("scaffolds hardhat node-runner-viem variant", async () => {
   );
 });
 
+test("scaffolds into current directory when projectName is dot and directory is logically empty", async () => {
+  const config = await loadTemplateConfig();
+  const variant = pickVariant(config, {
+    template: "default",
+    framework: "hardhat",
+    language: "typescript",
+    projectType: "minimal",
+  });
+
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "compose-cli-it-dot-"));
+  const originalCwd = process.cwd();
+  process.chdir(tempRoot);
+
+  try {
+    const result = await scaffold({
+      projectName: ".",
+      templatePath: resolveTemplatePath(variant),
+      options: {
+        framework: variant.framework,
+        language: variant.language,
+        hardhatProjectType: variant.projectType,
+        installDeps: false,
+      },
+    });
+
+    const packageJson = await fs.readJson(path.join(result.projectDir, "package.json"));
+    assert.equal(result.projectDir, tempRoot);
+    assert.equal(packageJson.name, path.basename(tempRoot));
+  } finally {
+    process.chdir(originalCwd);
+  }
+});
+
 test("scaffold throws for unknown framework", async () => {
   await assert.rejects(
     () =>

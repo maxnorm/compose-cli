@@ -115,7 +115,8 @@ async function runInitCommand(argv) {
 
   const templatePath = resolveTemplatePath(selectedVariant);
 
-  const { projectDir, nextSteps } = await scaffold({
+
+  const { projectDir, displayName, nextSteps } = await scaffold({
     projectName: initOptions.projectName,
     templatePath,
     options: {
@@ -126,13 +127,15 @@ async function runInitCommand(argv) {
     },
   });
 
-  logger.success(`\nProject "${initOptions.projectName}" scaffolded in "${projectDir}"`);
+  logger.success(`\nProject "${displayName}" scaffolded in "${projectDir}"`);
   logger.plain("Next steps:");
   let stepCount = 1;
-  logger.plain(`${stepCount}. cd ${initOptions.projectName}`);
+  if (path.resolve(projectDir) !== process.cwd()) {
+    logger.plain(`${stepCount}. cd ${displayName}`);
+  }
   for (const step of nextSteps) {
-    stepCount++;
     logger.plain(`${stepCount}. ${step}`);
+    stepCount++;
   }
 
   logger.plain("");

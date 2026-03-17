@@ -1,22 +1,15 @@
 const inquirer = require("inquirer").default;
-const templateConfig = require("../config/templates");
-
-function getTemplateChoices() {
-  const list = templateConfig.templates || [];
-  if (list.length === 0) {
-    return [{ name: "Default", value: "default" }];
-  }
-  return list.map((t) => ({ name: t.name, value: t.id }));
-}
+const { getTemplateChoices, validateProjectLocation } = require("../utils/prompts/initUtils");
 
 async function askInitPrompts(seed = {}) {
   const answers = await inquirer.prompt([
     {
       type: "input",
       name: "name",
-      message: "Where would you like to initialize the project? ",
-      default: seed.name || "my-compose-diamond",
+      message: 'Where would you like to initialize the project? ("." for current directory) ',
+      default: seed.name || "my-first-diamond",
       when: () => !seed.name,
+      validate: validateProjectLocation,
     },
     {
       type: "select",
@@ -71,5 +64,5 @@ async function askInitPrompts(seed = {}) {
 }
 
 module.exports = {
-  askInitPrompts,
+  askInitPrompts
 };

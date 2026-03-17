@@ -33,8 +33,24 @@ async function appendLineIfMissing(filePath, line) {
   }
 }
 
+async function assertDirectoryEmpty(projectDir) {
+  const entries = await fs.readdir(projectDir);
+  const ignoredEntries = [".git"];
+  const nonIgnored = entries.filter((entry) => !ignoredEntries.includes(entry));
+  if (nonIgnored.length > 0) {
+    throw new Error(`Target directory is not empty: ${projectDir}`);
+  }
+}
+
 function resolveProjectDir(projectName) {
   return path.join(process.cwd(), projectName);
+}
+
+function getProjectDisplayName(projectName, projectDir) {
+  if (projectName === ".") {
+    return path.basename(projectDir);
+  }
+  return projectName;
 }
 
 function getTemplateDisplayName(templatePath) {
@@ -48,10 +64,12 @@ function getTemplateDisplayName(templatePath) {
 
 module.exports = {
   assertTargetDoesNotExist,
+  assertDirectoryEmpty,
   copyTemplate,
   readJson,
   writeJson,
   appendLineIfMissing,
   resolveProjectDir,
+  getProjectDisplayName,
   getTemplateDisplayName,
 };

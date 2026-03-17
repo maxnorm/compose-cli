@@ -1,12 +1,23 @@
 const fs = require("fs-extra");
-const { assertTargetDoesNotExist, resolveProjectDir } = require("./utils/fileManager");
+const {
+  assertTargetDoesNotExist,
+  assertDirectoryEmpty,
+  resolveProjectDir,
+  getProjectDisplayName,
+} = require("./utils/fileManager");
 const { replaceTokensRecursively } = require("./utils/tokenReplace");
-const { scaffoldFoundry } = require("./frameworks/scaffoldFoundry");
-const { scaffoldHardhat } = require("./frameworks/scaffoldHardhat");
+const { scaffoldFoundry } = require("./frameworks/foundry");
+const { scaffoldHardhat } = require("./frameworks/hardhat");
 
 async function scaffold({ projectName, templatePath, options }) {
   const projectDir = resolveProjectDir(projectName);
-  await assertTargetDoesNotExist(projectDir);
+  if (projectName === ".") {
+    await assertDirectoryEmpty(projectDir);
+  } else {
+    await assertTargetDoesNotExist(projectDir);
+  }
+
+  const displayName = getProjectDisplayName(projectName, projectDir);
 
   const templateExists = await fs.pathExists(templatePath);
   if (!templateExists) {
@@ -15,19 +26,20 @@ async function scaffold({ projectName, templatePath, options }) {
 
   let frameworkResult;
   if (options.framework === "foundry") {
-    frameworkResult = await scaffoldFoundry(projectName, templatePath, projectDir, options);
+    frameworkResult = await scaffoldFoundry(displayName, templatePath, projectDir, options);
   } else if (options.framework === "hardhat") {
-    frameworkResult = await scaffoldHardhat(projectName, templatePath, projectDir, options);
+    frameworkResult = await scaffoldHardhat(displayName, templatePath, projectDir, options);
   } else {
     throw new Error(`Unknown framework: ${options.framework}`);
   }
 
   await replaceTokensRecursively(projectDir, {
-    "{{projectName}}": projectName,
+    "{{projectName}}": displayName,
   });
 
   return {
     projectDir,
+    displayName,
     nextSteps: frameworkResult?.nextSteps || [],
   };
 }

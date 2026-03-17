@@ -15,7 +15,7 @@ async function scaffoldHardhat(projectName, templatePath, projectDir, options) {
   const packageJsonPath = path.join(projectDir, "package.json");
   const packageJson = await readJson(packageJsonPath);
 
-  packageJson.name = path.basename(projectName);
+  packageJson.name = projectName;
   packageJson.type = "module";
 
   packageJson.scripts = packageJson.scripts || {};
