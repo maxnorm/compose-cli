@@ -1,4 +1,4 @@
-const templateConfig = require("../config/templates");
+const templateConfig = require("../../config/templates.json");
 const { assertDirectoryEmpty } = require("../../scaffold/utils/fileManager");
 
 function getTemplateChoices() {
